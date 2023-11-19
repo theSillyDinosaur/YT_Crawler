@@ -1,7 +1,7 @@
 import requests
 from pprint import pprint
 from datetime import datetime
-import JSON
+import src.JSON as JSON
 import os
 
 YOUTUBE_API_KEY = "AIzaSyAx_LGql8R3j9edTsXFJJ0VAtbw1nIbIi8"

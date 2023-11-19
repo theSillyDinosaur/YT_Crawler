@@ -114,12 +114,6 @@
         "uploads": "UU8zkK0-g8S8Z_t8ZjUmpAlA"
     },
     {
-        "title": "HowFun",
-        "id": "UCxUzQ3wu0oJP_8YLWt71WgQ",
-        "customUrl": "@howfunofficial",
-        "uploads": "UUxUzQ3wu0oJP_8YLWt71WgQ"
-    },
-    {
         "title": "\u6ef4\u59b9",
         "id": "UCGpNjY0Xq2GJLXh4OOX1LOA",
         "customUrl": "@crowndu",
@@ -178,5 +172,11 @@
         "id": "UC6FcYHEm7SO1jpu5TKjNXEA",
         "customUrl": "@thisgroupofpeople",
         "uploads": "UU6FcYHEm7SO1jpu5TKjNXEA"
+    },
+    {
+        "title": "HowFun",
+        "id": "UCxUzQ3wu0oJP_8YLWt71WgQ",
+        "customUrl": "@howfunofficial",
+        "uploads": "UUxUzQ3wu0oJP_8YLWt71WgQ"
     }
 ]

@@ -1,21 +1,26 @@
-import YTSpider
-import JSON
+import src.YTSpider as YTSpider
+import src.JSON as JSON
 import os
 
 def main():
-    print("hey")
     c = channelInfo("channel")
     while(1):
-        op = input('Insert:i, delete:d, list:l, exit:e...')
-        if op == 'i':
+        op = input('Operation: (i)nsert, (s)equentially insert, (d)elete, (l)ist, (e)xit:')
+        if op == 'i' or op == 'insert':
             keyword = input('Insert Keyword...')
             c.search_and_insert(keyword)
-        elif op == 'd':
+        if op == 's' or op == 'sequentially' or op == 'sequentially insert':
+            while 1:
+                keyword = input('Sequentially Insert Keyword... ((e)xit)')
+                if keyword == 'e' or keyword == 'exit':
+                    break
+                c.search_and_insert(keyword)
+        elif op == 'd' or op == 'delete':
             keyword = input('Delete Title...')
             c.delete_byTitle(keyword)
-        elif op == 'l':
+        elif op == 'l' or op == 'list':
             c.list_byTitle()
-        elif op == 'e':
+        elif op == 'e' or op == 'exit':
             break
         else:
             print("Invalid operation.")
@@ -39,7 +44,7 @@ class channelInfo:
             for i, info in enumerate(self.channel):
                 if info['id'] == new_info['id']:
                     print(f"pop old: {info}")
-                    channelInfo.pop(i)
+                    self.channel.pop(i)
                     break
             print(f"insert: {new_info}")
             self.channel.append(new_info)
@@ -47,14 +52,14 @@ class channelInfo:
         return
     
     def list_byTitle(self):
-        print("title: ")
+        print("listed by channel title")
         for i, info in enumerate(self.channel):
-            print(f"\t{i}\t{info['title']}")
+            print(f"{i}\t{info['title']}")
         return
     
     def delete_byTitle(self, keyword):
         for i, info in enumerate(self.channel):
-            if info['title'] == keyword:
+            if keyword in info['title']:
                 print(f"delete: {info}")
                 self.channel.pop(i)
                 break
