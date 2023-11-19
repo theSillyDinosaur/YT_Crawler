@@ -4,7 +4,7 @@ from datetime import datetime
 import src.JSON as JSON
 import os
 
-YOUTUBE_API_KEY = "AIzaSyAx_LGql8R3j9edTsXFJJ0VAtbw1nIbIi8"
+YOUTUBE_API_KEY = "AIzaSyA92T3CejAd_SurkUBEQSx59Z7FZCkzmro"
 video_folder = "videos"
 
 
@@ -50,9 +50,9 @@ class YoutubeSpider():
             uploads_id = None
         return uploads_id
 
-    def get_playlist(self, playlist_id, part='snippet', max_results=10):
+    def get_playlist(self, playlist_id, part='snippet, contentDetails', max_results=100):
         page_token = ''
-        video_ids = []
+        videos = []
         while 1:
             path = f'playlistItems?part={part}&playlistId={playlist_id}&maxResults={max_results}&pageToken={page_token}'
             data = self.get_html_to_json(path)
@@ -61,10 +61,17 @@ class YoutubeSpider():
 
             page_token = data.get('nextPageToken', '')
             for data_item in data['items']:
-                video_ids.append(data_item['contentDetails']['videoId'])
+                if len(videos) >= max_results:
+                    break
+                videos.append({
+                    "id": data_item['contentDetails']['videoId'],
+                    "title": data_item['snippet']['title']
+                    })
             if not page_token:
                 break
-        return video_ids
+            if len(videos) >= max_results:
+                break
+        return videos
     
     def get_popular_chart(self, regionCode, videoCategoryId, part='contentDetails'):
         page_token = ''
@@ -93,8 +100,6 @@ class YoutubeSpider():
 
         info = {'id': data_item['id']}
         key_pairs = [('snippet', 'channelTitle'),
-                    ('snippet', 'publishedAt'),
-                    ('snippet', 'channelTitle'),
                     ('snippet', 'title'),
                     ('snippet', 'description'),
                     ('statistics', 'likeCount'),
@@ -120,29 +125,25 @@ class YoutubeSpider():
             page_token = data.get('nextPageToken', '')
 
             for data_item in data['items']:
+                if len(comments) >= max_results:
+                    break
                 data_item = data_item['snippet']
                 top_comment = data_item['topLevelComment']
 
-                if 'authorChannelId' in top_comment['snippet']:
-                    ru_id = top_comment['snippet']['authorChannelId']['value']
-                else:
-                    ru_id = ''
-
                 ru_name = top_comment['snippet'].get('authorDisplayName', '')
                 if not ru_name:
-                    ru_name = ''
+                    ru_name = None
 
                 comments.append({
                     'reply_id': top_comment['id'],
-                    'ru_id': ru_id,
-                    'ru_name': ru_name,
-                    'reply_time': top_comment['snippet']['publishedAt'],
                     'reply_content': top_comment['snippet']['textOriginal'],
                     'rm_positive': int(top_comment['snippet']['likeCount']),
                     'rn_comment': int(data_item['totalReplyCount'])
                 })
             
             if not page_token:
+                break
+            if len(comments) >= max_results:
                 break
         return comments
     
