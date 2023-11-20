@@ -4,12 +4,13 @@ from datetime import datetime
 import src.JSON as JSON
 import os
 
-YOUTUBE_API_KEY = "AIzaSyA92T3CejAd_SurkUBEQSx59Z7FZCkzmro"
 video_folder = "videos"
 
 
 def main():
     print("YTSpider, start testing!")
+    config = JSON.read_JSON("Config")
+    YOUTUBE_API_KEY = config['api_key']
     youtube_channel_id = "UC7ia-A8gma8qcdC6GDcjwsQ"
 
     youtube_spider = YoutubeSpider(YOUTUBE_API_KEY)
@@ -114,11 +115,11 @@ class YoutubeSpider():
                 print(f"{info['id']}: {key2} lost!")
         return info
 
-    def get_comments(self, video_id, page_token='', part='snippet', max_results=100):
+    def get_comments(self, video_id, page_token='', part='snippet', max_results=100, filter=None):
         page_token = ''
         comments = []
         while 1:
-            path = f'commentThreads?part={part}&videoId={video_id}&maxResults={max_results}&pageToken={page_token}'
+            path = f'commentThreads?part={part}&videoId={video_id}&maxResults=100&pageToken={page_token}'
             data = self.get_html_to_json(path)
             if not data:
                 break
@@ -129,6 +130,8 @@ class YoutubeSpider():
                     break
                 data_item = data_item['snippet']
                 top_comment = data_item['topLevelComment']
+                if not (filter == None or filter(top_comment['snippet']['textOriginal'])):
+                    continue
 
                 ru_name = top_comment['snippet'].get('authorDisplayName', '')
                 if not ru_name:
@@ -137,8 +140,6 @@ class YoutubeSpider():
                 comments.append({
                     'reply_id': top_comment['id'],
                     'reply_content': top_comment['snippet']['textOriginal'],
-                    'rm_positive': int(top_comment['snippet']['likeCount']),
-                    'rn_comment': int(data_item['totalReplyCount'])
                 })
             
             if not page_token:
